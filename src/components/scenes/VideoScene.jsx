@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ICE_CREAM_VIDEO_URL, SELECTION_BRIGHTNESS, videoTimeAt } from '../../config/videoMap.js'
+import { PATHS } from '../../config/paths.js'
+import { SELECTION_BRIGHTNESS, VIDEO_ELEMENT_ID, videoTimeAt } from '../../config/videoMap.js'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
 import { loadVideo, scrubVideo } from '../../ui/videoScrub.js'
 
@@ -13,11 +14,13 @@ const VIDEO_DURATION = 9.96
 const STARTED_AT = 0.003
 const LOOPED_AT = 0.995 // Video vişnelere döndü: seçim ekranına kesintisiz geçilir.
 const DIM_FROM = 0.9
-// Saniye cinsinden: dondurma kasede göründüğü andan vişneye dönüşe (8,08) kadar.
-const PRODUCT_WINDOW = [4.7, 8]
 
-/** Vişnenin dondurmaya dönüşümü: seçim karesinden başlar, yine aynı kareye döner. */
-export function IceCreamScene() {
+/**
+ * Seçilen hasadın dönüşüm videosu (dondurma, tesbih): seçim karesinden başlar, kendi scroll alanında ilerler.
+ * Dondurma vişnelere dönerek seçim karesine bağlanır; tesbih karanlığa söner (bkz. config/paths.js).
+ */
+export function VideoScene({ path }) {
+  const { video: videoUrl, productWindow, endBrightness, result } = PATHS[path]
   const scroller = useRef(null)
   const track = useRef(null)
   const video = useRef(null)
@@ -33,18 +36,20 @@ export function IceCreamScene() {
       const { sceneStage, startScene, completeScene, resumeScene, returnToGarden } =
         useExperienceStore.getState()
       if (progress.value >= LOOPED_AT) {
+        // Seçim ekranı videonun karartmasını devralır; kareler arasında parlaklık atlamaz.
+        document.getElementById(VIDEO_ELEMENT_ID).style.filter = `brightness(${endBrightness})`
         returnToGarden()
         return
       }
 
       // Seçim ekranının karartmasına yaklaşarak iner; iki video arasında parlaklık atlamaz.
       if (progress.value > DIM_FROM) {
-        const brightness = mapRange(DIM_FROM, LOOPED_AT, 1, SELECTION_BRIGHTNESS, progress.value)
-        element.style.filter = `brightness(${clamp(SELECTION_BRIGHTNESS, 1, brightness)})`
+        const brightness = mapRange(DIM_FROM, LOOPED_AT, 1, endBrightness, progress.value)
+        element.style.filter = `brightness(${clamp(endBrightness, 1, brightness)})`
       }
 
       const time = videoTimeAt(progress.value, VIDEO_DURATION)
-      const showProduct = time >= PRODUCT_WINDOW[0] && time < PRODUCT_WINDOW[1]
+      const showProduct = time >= productWindow[0] && time < productWindow[1]
       if (showProduct) {
         if (sceneStage !== 'done') completeScene()
       } else if (sceneStage === 'done') {
@@ -63,7 +68,7 @@ export function IceCreamScene() {
       )
     }
     element.addEventListener('loadeddata', reveal, { once: true })
-    loadVideo(ICE_CREAM_VIDEO_URL).then((url) => {
+    loadVideo(videoUrl).then((url) => {
       if (!disposed) element.src = url
     })
 
@@ -90,13 +95,13 @@ export function IceCreamScene() {
       gsap.killTweensOf(element)
       element.removeEventListener('loadeddata', reveal)
     }
-  }, [])
+  }, [videoUrl, endBrightness, productWindow])
 
   return (
     <div
       ref={scroller}
       tabIndex={0}
-      aria-label="Vişne dondurma videosu, kaydırarak ilerletin"
+      aria-label={`${result} videosu, kaydırarak ilerletin`}
       className="hidden-scrollbar absolute inset-0 overflow-y-auto overscroll-contain outline-none"
     >
       <div ref={track} className="relative h-[560vh]">

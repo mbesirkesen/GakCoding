@@ -1,3 +1,5 @@
+import { ICE_CREAM_VIDEO_URL, ROSARY_VIDEO_URL, SELECTION_BRIGHTNESS } from './videoMap.js'
+
 // Metinler örnektir; gerçek ürün verisiyle değiştirilecek.
 export const PATHS = {
   leaf: {
@@ -13,7 +15,10 @@ export const PATHS = {
   pit: {
     label: 'Çekirdek',
     result: 'Tesbih',
-    hint: null,
+    hint: 'Kaydır, çekirdek tesbihe dönüşsün',
+    video: ROSARY_VIDEO_URL,
+    productWindow: [8.4, 10], // Tesbih tam göründüğü andan sona kadar.
+    endBrightness: 0, // Video vişneye dönmez; karanlığa sönüp seçim ekranına açılır.
     product: {
       id: 'visne-cekirdegi-tesbih',
       name: 'Vişne Çekirdeği Tesbih',
@@ -24,6 +29,9 @@ export const PATHS = {
     label: 'Meyve',
     result: 'Vişne Dondurma',
     hint: 'Kaydır, vişne dondurmaya dönüşsün',
+    video: ICE_CREAM_VIDEO_URL,
+    productWindow: [4.7, 8], // Dondurma kasede göründüğü andan vişneye dönüşe kadar.
+    endBrightness: SELECTION_BRIGHTNESS,
     product: {
       id: 'visne-dondurma',
       name: 'Vişne Dondurma',
