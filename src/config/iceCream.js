@@ -1,9 +1,7 @@
 import { BRAND } from './brand.js'
 
-export const FRAME_COUNT = 190
-export const ANIMATION_SECONDS = 7.9
-export const FOOTER_VIDEO_URL = '/media/dondurma-footer-dongu.mp4'
-export const FOOTER_POSTER = '/media/dondurma-footer-poster.jpg'
+export const FRAME_COUNT = 239
+export const ANIMATION_SECONDS = 9.95
 
 // Video saniyeleri; metinler karedeki gerçek anlara bağlıdır.
 export const SCENES = {
@@ -11,7 +9,7 @@ export const SCENES = {
   origin: { in: 2.4, out: 3.5 },
   process: { in: 3.5, out: 4.3 },
   product: { in: 4.3, out: 6 },
-  cta: { in: 6 },
+  cta: { in: 6, out: 8.05 }, // 8,08'de video vişnelere döner.
 }
 
 // Köşeli parantezli alanlar gerçek bilgiyle doldurulacak.
@@ -24,12 +22,7 @@ export const ICE_CREAM = {
   },
   process: ['Katkısız', '%[X] gerçek meyve', 'Her gün taze üretim'],
   product: { notes: '[TAT NOTLARI]', weight: '[GRAMAJ]' },
-  cta: { title: 'Bu tadı kaçırma', button: 'Sipariş Ver' },
-  footer: {
-    address: '[ADRES]',
-    contact: ['[TELEFON]', '[E-POSTA]'],
-    social: ['[SOSYAL MEDYA 1]', '[SOSYAL MEDYA 2]'],
-  },
+  cta: { title: 'Bu tadı kaçırma' },
 }
 
 // Hareket azaltma tercihinde her sahneyi temsil eden kare.

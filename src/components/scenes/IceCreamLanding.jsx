@@ -2,23 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PATHS } from '../../config/paths.js'
-import {
-  ANIMATION_SECONDS,
-  FOOTER_POSTER,
-  FOOTER_VIDEO_URL,
-  ICE_CREAM,
-  SCENES,
-  STILL_FRAMES,
-} from '../../config/iceCream.js'
+import { ANIMATION_SECONDS, ICE_CREAM, SCENES, STILL_FRAMES } from '../../config/iceCream.js'
 import { SELECTION_BRIGHTNESS } from '../../config/videoMap.js'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
 import { frameUrl, onFramesProgress, startFrameRenderer } from '../../ui/frameSequence.js'
-import { backToGarden } from '../../ui/wipe.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const FADE = 0.2
-const END_TOLERANCE = 2 // Tarayıcıların küsuratlı scroll değerlerini tolere eder.
+const DIM_SECONDS = 0.6 // Son karede seçim ekranının parlaklığına iner.
 const SLIDE = 36
 const heading = 'font-serif leading-[1.02] font-normal tracking-[-0.01em]'
 const legible = '[text-shadow:0_2px_24px_rgba(22,11,12,.6)]'
@@ -33,7 +25,6 @@ function ScrubStory() {
   const scroller = useRef(null)
   const track = useRef(null)
   const canvas = useRef(null)
-  const footer = useRef(null)
   const [loaded, setLoaded] = useState(0)
   const ready = loaded >= 1
 
@@ -44,16 +35,10 @@ function ScrubStory() {
     const area = scroller.current
     const progress = { value: 0 }
     area.focus({ preventScroll: true })
-    const stopRenderer = startFrameRenderer(canvas.current, () => progress.value)
-
-    // Sona varınca hikâye başa bağlanır: seçim karesi footer'ın arkasındaki kareyle aynıdır.
-    const loopAtEnd = () => {
-      if (area.scrollTop + area.clientHeight >= area.scrollHeight - END_TOLERANCE) {
-        area.removeEventListener('scroll', loopAtEnd)
-        useExperienceStore.getState().returnToGarden()
-      }
-    }
-    area.addEventListener('scroll', loopAtEnd, { passive: true })
+    // Video vişnelere döner; son kare çizilince seçim ekranına kesintisiz geçilir.
+    const stopRenderer = startFrameRenderer(canvas.current, () => progress.value, () => {
+      useExperienceStore.getState().returnToGarden()
+    })
 
     const context = gsap.context(() => {
       // Seçim karesinin karartmasından açılır; geçişte parlaklık atlamaz.
@@ -99,25 +84,19 @@ function ScrubStory() {
         }
       })
 
-      // Footer içeriği çekilir, karartma seçim ekranının parlaklığına iner.
-      gsap
-        .timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: {
-            scroller: area,
-            trigger: footer.current,
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.4,
-          },
-        })
-        .to('[data-footer-content]', { autoAlpha: 0, y: -SLIDE, duration: 0.45 }, 0.45)
-        .to('[data-footer-shade]', { opacity: 0 }, 0.45)
-        .to('[data-footer-dim]', { opacity: 1 - SELECTION_BRIGHTNESS }, 0.45)
+      timeline.fromTo(
+        canvas.current,
+        { filter: 'brightness(1)' },
+        {
+          filter: `brightness(${SELECTION_BRIGHTNESS})`,
+          duration: DIM_SECONDS,
+          immediateRender: false,
+        },
+        ANIMATION_SECONDS - DIM_SECONDS,
+      )
     }, area)
 
     return () => {
-      area.removeEventListener('scroll', loopAtEnd)
       stopRenderer()
       context.revert()
     }
@@ -132,18 +111,17 @@ function ScrubStory() {
         ready ? 'overflow-y-auto' : 'overflow-hidden'
       }`}
     >
-      <div ref={track} className="relative h-[600vh]">
+      <div ref={track} className="relative h-[750vh]">
         <div className="sticky top-0 h-dvh overflow-hidden">
           <canvas ref={canvas} className="invisible absolute inset-0 size-full" />
           {ready && (
             <>
               <EdgeShade />
-              <SceneBlocks onOrder={() => footer.current?.scrollIntoView({ behavior: 'smooth' })} animated />
+              <SceneBlocks animated />
             </>
           )}
         </div>
       </div>
-      <Footer ref={footer} autoplay rootRef={scroller} />
       {!ready && <Loader value={loaded} />}
     </div>
   )
@@ -151,13 +129,12 @@ function ScrubStory() {
 
 /** Hareket azaltma tercihi: scrubbing yok, her sahne sabit görseliyle sırayla gelir. */
 function StillStory() {
-  const footer = useRef(null)
   const scenes = {
     hero: <HeroBlock />,
     origin: <OriginBlock />,
     process: <ProcessBlock />,
     product: <ProductBlock />,
-    cta: <CtaBlock onOrder={() => footer.current?.scrollIntoView()} />,
+    cta: <CtaBlock />,
   }
 
   return (
@@ -169,7 +146,6 @@ function StillStory() {
           {block}
         </section>
       ))}
-      <Footer ref={footer} />
     </div>
   )
 }
@@ -183,7 +159,7 @@ function EdgeShade() {
   )
 }
 
-function SceneBlocks({ onOrder, animated }) {
+function SceneBlocks({ animated }) {
   const hidden = animated ? 'invisible' : ''
   return (
     <>
@@ -191,7 +167,7 @@ function SceneBlocks({ onOrder, animated }) {
       <OriginBlock className={hidden} />
       <ProcessBlock className={hidden} />
       <ProductBlock className={hidden} />
-      <CtaBlock className={hidden} onOrder={onOrder} />
+      <CtaBlock className={hidden} />
     </>
   )
 }
@@ -258,21 +234,14 @@ function ProductBlock({ className = '' }) {
   )
 }
 
-function CtaBlock({ className = '', onOrder }) {
-  const { title, button } = ICE_CREAM.cta
+function CtaBlock({ className = '' }) {
   return (
-    <div
+    <h3
       data-scene="cta"
-      className={`absolute top-1/2 left-[var(--gutter)] w-[min(30vw,26rem)] -translate-y-1/2 max-md:top-auto max-md:bottom-8 max-md:w-[calc(100%-2*var(--gutter))] max-md:translate-y-0 ${legible} ${className}`}
+      className={`${heading} absolute top-1/2 left-[var(--gutter)] m-0 w-[min(30vw,26rem)] -translate-y-1/2 text-[clamp(2.5rem,5vw,4.75rem)] max-md:top-auto max-md:bottom-8 max-md:w-[calc(100%-2*var(--gutter))] max-md:translate-y-0 ${legible} ${className}`}
     >
-      <h3 className={`${heading} m-0 text-[clamp(2.5rem,5vw,4.75rem)]`}>{title}</h3>
-      <button
-        onClick={onOrder}
-        className="mt-6 h-14 cursor-pointer rounded-full bg-cherry-deep px-9 text-lg font-medium text-krem shadow-[0_8px_32px_rgba(22,11,12,.45)] transition-transform hover:scale-105 max-md:w-full"
-      >
-        {button}
-      </button>
-    </div>
+      {ICE_CREAM.cta.title}
+    </h3>
   )
 }
 
@@ -288,76 +257,6 @@ function Loader({ value }) {
       <div className="h-0.5 bg-krem/30">
         <div className="h-full bg-krem" style={{ width: `${percent}%` }} />
       </div>
-    </div>
-  )
-}
-
-function Footer({ ref, autoplay = false, rootRef }) {
-  const video = useRef(null)
-
-  // Döngü yalnızca footer görünürken oynar.
-  useEffect(() => {
-    if (!autoplay) return
-    const element = video.current
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) element.play().catch(() => {})
-        else element.pause()
-      },
-      { root: rootRef?.current ?? null },
-    )
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [autoplay, rootRef])
-
-  const { address, contact, social } = ICE_CREAM.footer
-  return (
-    <div ref={ref} className={autoplay ? 'relative h-[200dvh]' : 'relative'}>
-    <footer
-      className={`${autoplay ? 'sticky top-0' : 'relative'} flex h-dvh flex-col justify-end overflow-hidden px-[var(--gutter)] pb-8`}
-    >
-      <video
-        ref={video}
-        className="absolute inset-0 size-full object-cover"
-        src={FOOTER_VIDEO_URL}
-        poster={FOOTER_POSTER}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden
-      />
-      <div data-footer-dim className="absolute inset-0 bg-black opacity-0" aria-hidden />
-      <div
-        data-footer-shade
-        className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/65 to-ink/10"
-        aria-hidden
-      />
-      <div data-footer-content className="relative">
-        <h2 className={`${heading} m-0 mb-8 text-[clamp(3rem,8vw,7rem)]`}>{ICE_CREAM.brand}</h2>
-        <div className="grid gap-5 border-t border-copper pt-5 sm:grid-cols-3">
-          <FooterColumn title="Adres" lines={[address]} />
-          <FooterColumn title="İletişim" lines={contact} />
-          <FooterColumn title="Sosyal medya" lines={social} />
-        </div>
-        <button onClick={backToGarden} className="label mt-6 cursor-pointer text-krem underline underline-offset-4">
-          Hasadını Seç’e dön
-        </button>
-      </div>
-    </footer>
-    </div>
-  )
-}
-
-function FooterColumn({ title, lines }) {
-  return (
-    <div>
-      <p className="label m-0 mb-2 text-copper">{title}</p>
-      {lines.map((line) => (
-        <p key={line} className="m-0 leading-snug">
-          {line}
-        </p>
-      ))}
     </div>
   )
 }

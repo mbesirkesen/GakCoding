@@ -50,12 +50,13 @@ function nearestFrame(images, index) {
 }
 
 /** object-fit: cover gibi çizer. Scroll yalnızca hedefi yazar; çizim requestAnimationFrame'de olur. */
-export function startFrameRenderer(canvas, getProgress) {
+export function startFrameRenderer(canvas, getProgress, onFinish) {
   const { images } = preloadFrames()
   const context = canvas.getContext('2d', { alpha: false })
   let current = getProgress() * (FRAME_COUNT - 1)
   let drawn = -1
   let handle = 0
+  let finished = false
 
   const resize = () => {
     const ratio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
@@ -81,6 +82,10 @@ export function startFrameRenderer(canvas, getProgress) {
     if (Math.abs(target - current) < 0.01) current = target
     const index = Math.round(current)
     if (index !== drawn) draw(index)
+    if (!finished && index === FRAME_COUNT - 1 && drawn === index) {
+      finished = true
+      onFinish?.()
+    }
   }
 
   const observer = new ResizeObserver(resize)
