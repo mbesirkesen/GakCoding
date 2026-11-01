@@ -1,4 +1,4 @@
-import { ICE_CREAM_VIDEO_URL, ROSARY_VIDEO_URL, SELECTION_BRIGHTNESS } from './videoMap.js'
+import { ROSARY_VIDEO_URL } from './videoMap.js'
 
 // Metinler örnektir; gerçek ürün verisiyle değiştirilecek.
 // Tesbih metnindeki vişne bilgisi (renk, hasat zamanı, elle toplama) Kültür ve Sanat Ansiklopedisi 'Elazığ Vişnesi' maddesine dayanır.
@@ -39,10 +39,7 @@ export const PATHS = {
   cherry: {
     label: 'Meyve',
     result: 'Vişne Dondurma',
-    hint: 'Kaydır, vişne dondurmaya dönüşsün',
-    video: ICE_CREAM_VIDEO_URL,
-    productWindow: [4.7, 8], // Dondurma kasede göründüğü andan vişneye dönüşe kadar.
-    endBrightness: SELECTION_BRIGHTNESS,
+    hint: null, // Sahne kendi metinlerini taşır (bkz. config/iceCream.js).
     product: {
       id: 'visne-dondurma',
       name: 'Vişne Dondurma',

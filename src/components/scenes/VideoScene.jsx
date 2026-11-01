@@ -12,12 +12,12 @@ const { mapRange, clamp } = gsap.utils
 
 const VIDEO_DURATION = 9.96
 const STARTED_AT = 0.003
-const LOOPED_AT = 0.995 // Video vişnelere döndü: seçim ekranına kesintisiz geçilir.
+const LOOPED_AT = 0.995 // Video bitti: seçim ekranına geçilir.
 const DIM_FROM = 0.9
 
 /**
- * Seçilen hasadın dönüşüm videosu (dondurma, tesbih): seçim karesinden başlar, kendi scroll alanında ilerler.
- * Dondurma vişnelere dönerek seçim karesine bağlanır; tesbih karanlığa söner (bkz. config/paths.js).
+ * Seçilen hasadın dönüşüm videosu: seçim karesinden başlar, kendi scroll alanında ilerler.
+ * Bitişteki davranış config/paths.js içindeki endBrightness ile belirlenir.
  */
 export function VideoScene({ path }) {
   const { video: videoUrl, productWindow, endBrightness, result } = PATHS[path]

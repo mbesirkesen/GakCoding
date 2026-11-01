@@ -1,12 +1,17 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/schibsted-grotesk';
 @import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource-variable/playfair-display';
 
 @theme {
   --color-cherry: #a30d2d;
   --color-cream: #f5efe6;
   --color-ink: #160b0c;
+  --color-cherry-deep: #8b0f1a;
+  --color-copper: #b87333;
+  --color-krem: #f5ebdd;
   --font-display: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Playfair Display Variable', Georgia, serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, Menlo, monospace;
   --text-giant: clamp(3.25rem, 11vw, 11rem);
   --text-large: clamp(2.5rem, 7vw, 7rem);

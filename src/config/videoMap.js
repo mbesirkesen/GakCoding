@@ -1,6 +1,5 @@
 export const VIDEO_ELEMENT_ID = 'harvest-video'
 export const VIDEO_URL = '/media/harput-growth.mp4'
-export const ICE_CREAM_VIDEO_URL = '/media/gadanalam-dondurma.mp4'
 export const ROSARY_VIDEO_URL = '/media/visne-cekirdegi-tesbih.mp4'
 export const VIDEO_POSTER = '/media/harput-poster.jpg'
 

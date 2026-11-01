@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { ICE_CREAM_VIDEO_URL, ROSARY_VIDEO_URL, VIDEO_ELEMENT_ID, VIDEO_POSTER, VIDEO_URL } from '../config/videoMap.js'
+import { ROSARY_VIDEO_URL, VIDEO_ELEMENT_ID, VIDEO_POSTER, VIDEO_URL } from '../config/videoMap.js'
 import { transient, useExperienceStore } from '../store/useExperienceStore.js'
+import { preloadFrames } from '../ui/frameSequence.js'
 import { loadVideo, scrubVideo } from '../ui/videoScrub.js'
 
 /** Kaleden hasada uzanan ana video; sayfa scroll'u ile sürülür. */
@@ -13,8 +14,8 @@ export function HarvestVideo() {
 
     const ready = () => {
       useExperienceStore.getState().beginGrowth()
-      // Seçimde bekletmemek için dönüşüm videoları önceden indirilir.
-      loadVideo(ICE_CREAM_VIDEO_URL)
+      // Seçimde bekletmemek için dönüşüm içerikleri önceden indirilir.
+      preloadFrames()
       loadVideo(ROSARY_VIDEO_URL)
     }
     element.addEventListener('canplaythrough', ready, { once: true })
