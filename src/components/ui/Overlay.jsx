@@ -205,8 +205,7 @@ function ProductReveal({ label, product }) {
       <div className="pointer-events-auto w-full rounded-[20px] bg-cream p-4 text-ink [text-shadow:none] sm:w-80 sm:p-5">
         <h3 className="m-0 text-xl font-normal tracking-[-0.02em] sm:hidden">{product.name}</h3>
         <p className="m-0 text-base leading-snug">{product.description}</p>
-        <div className="mt-3 flex items-center justify-between sm:mt-5">
-          <span className="text-2xl tracking-[-0.02em]">{product.price} TL</span>
+        <div className="mt-3 flex justify-end sm:mt-5">
           <Pill
             tone="cherry"
             onClick={() => {

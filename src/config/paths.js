@@ -1,4 +1,4 @@
-// Fiyatlar ve metinler örnektir; gerçek ürün verisiyle değiştirilecek.
+// Metinler örnektir; gerçek ürün verisiyle değiştirilecek.
 export const PATHS = {
   leaf: {
     label: 'Yaprak',
@@ -8,7 +8,6 @@ export const PATHS = {
       id: 'visne-yapragi-cayi',
       name: 'Vişne Yaprağı Çayı',
       description: 'Harput bahçelerinden, kırmızı demli bitki çayı.',
-      price: 149,
     },
   },
   pit: {
@@ -19,7 +18,6 @@ export const PATHS = {
       id: 'visne-cekirdegi-tesbih',
       name: 'Vişne Çekirdeği Tesbih',
       description: '33 cilalı boncuk, el işi püsküllü imame.',
-      price: 399,
     },
   },
   cherry: {
@@ -30,7 +28,6 @@ export const PATHS = {
       id: 'visne-dondurma',
       name: 'Vişne Dondurma',
       description: 'Harput vişnesinden dondurma.',
-      price: 79,
     },
   },
 }

@@ -1,16 +1,22 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ICE_CREAM_VIDEO_URL, SELECTION_BRIGHTNESS } from '../../config/videoMap.js'
+import { ICE_CREAM_VIDEO_URL, SELECTION_BRIGHTNESS, videoTimeAt } from '../../config/videoMap.js'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
 import { loadVideo, scrubVideo } from '../../ui/videoScrub.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const STARTED_AT = 0.003
-const FINISHED_AT = 0.995
+const { mapRange, clamp } = gsap.utils
 
-/** Vişnenin dondurmaya dönüşümü: seçim karesinden başlar, kendi scroll alanında ilerler. */
+const VIDEO_DURATION = 9.96
+const STARTED_AT = 0.003
+const LOOPED_AT = 0.995 // Video vişnelere döndü: seçim ekranına kesintisiz geçilir.
+const DIM_FROM = 0.9
+// Saniye cinsinden: dondurma kasede göründüğü andan vişneye dönüşe (8,08) kadar.
+const PRODUCT_WINDOW = [4.7, 8]
+
+/** Vişnenin dondurmaya dönüşümü: seçim karesinden başlar, yine aynı kareye döner. */
 export function IceCreamScene() {
   const scroller = useRef(null)
   const track = useRef(null)
@@ -24,11 +30,25 @@ export function IceCreamScene() {
     area.focus({ preventScroll: true }) // Ok ve boşluk tuşları da kaydırsın.
 
     const onUpdate = () => {
-      const { sceneStage, startScene, completeScene, resumeScene } = useExperienceStore.getState()
-      if (progress.value >= FINISHED_AT) {
+      const { sceneStage, startScene, completeScene, resumeScene, returnToGarden } =
+        useExperienceStore.getState()
+      if (progress.value >= LOOPED_AT) {
+        returnToGarden()
+        return
+      }
+
+      // Seçim ekranının karartmasına yaklaşarak iner; iki video arasında parlaklık atlamaz.
+      if (progress.value > DIM_FROM) {
+        const brightness = mapRange(DIM_FROM, LOOPED_AT, 1, SELECTION_BRIGHTNESS, progress.value)
+        element.style.filter = `brightness(${clamp(SELECTION_BRIGHTNESS, 1, brightness)})`
+      }
+
+      const time = videoTimeAt(progress.value, VIDEO_DURATION)
+      const showProduct = time >= PRODUCT_WINDOW[0] && time < PRODUCT_WINDOW[1]
+      if (showProduct) {
         if (sceneStage !== 'done') completeScene()
       } else if (sceneStage === 'done') {
-        resumeScene() // Geri kaydırınca ürün kartı çekilir.
+        resumeScene() // Pencere dışında ürün kartı çekilir.
       } else if (progress.value > STARTED_AT) {
         startScene()
       }
@@ -79,7 +99,7 @@ export function IceCreamScene() {
       aria-label="Vişne dondurma videosu, kaydırarak ilerletin"
       className="hidden-scrollbar absolute inset-0 overflow-y-auto overscroll-contain outline-none"
     >
-      <div ref={track} className="relative h-[450vh]">
+      <div ref={track} className="relative h-[560vh]">
         <video
           ref={video}
           className="invisible sticky top-0 h-screen w-full object-cover"
