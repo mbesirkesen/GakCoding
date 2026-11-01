@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import { useCursor } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { useExperienceStore } from '../../store/useExperienceStore.js'
+import { transient, useExperienceStore } from '../../store/useExperienceStore.js'
 import { createLeafGeometry, useSceneCamera } from '../../three/models.jsx'
 import { leafDissolveShader } from '../../three/shaders/leafDissolve.js'
 
@@ -14,6 +14,7 @@ const GLASS_REST_Y = -2.5
 const GLASS_START_Y = -8
 const LIQUID_FLOOR = 0.1
 const LIQUID_HEIGHT = 1.8
+const SCENE_SECONDS = 8 // Animasyon ~6,8 sn'de biter; son yazı için kısa bir bekleme eklenir.
 
 // [yarıçap, yükseklik]: ince belli çay bardağı.
 const GLASS_PROFILE = [
@@ -69,7 +70,10 @@ export function TeaScene() {
     }
   }, [])
 
-  useEffect(() => () => timeline.current?.kill(), [])
+  useEffect(() => {
+    transient.sceneTime = 0 // Önceki sahneden kalan zaman yazıları açmasın.
+    return () => timeline.current?.kill()
+  }, [])
 
   const play = () => {
     if (timeline.current) return
@@ -77,6 +81,8 @@ export function TeaScene() {
     const m = motion.current
     timeline.current = gsap
       .timeline({ onComplete: completeScene })
+      // Yazılar (SceneCaptions) bu saniyeyi izler; ürün kartı yazılar bitince açılır.
+      .to(transient, { sceneTime: SCENE_SECONDS, duration: SCENE_SECONDS, ease: 'none' }, 0)
       .to(assets.leafUniforms.uDissolve, { value: 1, duration: 2.6, ease: 'sine.inOut' }, 0)
       .to(m, { dissolve: 1, duration: 2.6, ease: 'sine.inOut' }, 0)
       .to(m, { head: 1, duration: 1.6, ease: 'power2.in' }, 1)

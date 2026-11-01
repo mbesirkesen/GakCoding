@@ -8,6 +8,14 @@ export const PATHS = {
     label: 'Yaprak',
     result: 'Çay',
     hint: 'Yaprağa dokun',
+    // Saniyeler çay sahnesinin animasyonuna göre (TeaScene zaman çizelgesi); yazılar yaprağa dokunulunca başlar. side: yazının ekrandaki tarafı.
+    // Metinler örnektir; kaynaksız sağlık/içerik iddiası eklenmemelidir.
+    captions: [
+      { side: 'left', in: 0.3, out: 2.0, kicker: 'Ağacın yaprağı', title: 'Yaprak, atılmaz.', text: 'Vişne ağacının verdiği her şey bir değere dönüşür; yaprak da demlenmeyi bekler.' },
+      { side: 'right', in: 2.2, out: 3.8, kicker: 'Harput bahçelerinden', title: 'Dalından demine.', text: 'Harput bahçelerindeki vişne ağaçlarının yaprağı, bir bardak çaya dönüşür.' },
+      { side: 'left', in: 4.0, out: 5.6, kicker: 'Kırmızı demli', title: 'Bardağa vişne rengi.', text: 'Demlendiğinde bardağı kırmızıya boyayan bir bitki çayı.' },
+      { side: 'right', in: 5.8, out: 7.6, kicker: 'Vişne Yaprağı Çayı', title: 'Bir bardak Harput.', text: 'Yavaş iç, sıcak iç: sevdiğine söylenen bir söz gibi.' },
+    ],
     product: {
       id: 'visne-yapragi-cayi',
       name: 'Vişne Yaprağı Çayı',
