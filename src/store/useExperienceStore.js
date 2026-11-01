@@ -6,7 +6,7 @@ import { create } from 'zustand'
  */
 
 // Her karede değişen değerler React'e girmez; useFrame buradan okur.
-export const transient = { growth: 0 }
+export const transient = { growth: 0, sceneTime: 0 } // sceneTime: dönüşüm videosunun saniyesi
 
 export const useExperienceStore = create((set) => ({
   phase: 'intro',

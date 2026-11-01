@@ -4,6 +4,7 @@ import { BRAND } from '../../config/brand.js'
 import { PATHS } from '../../config/paths.js'
 import { BrandStory } from './BrandStory.jsx'
 import { SELECTION_BRIGHTNESS, VIDEO_ELEMENT_ID } from '../../config/videoMap.js'
+import { SceneCaptions } from './SceneCaptions.jsx'
 import { VideoCaptions } from './VideoCaptions.jsx'
 import { VideoHotspots } from './VideoHotspots.jsx'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
@@ -161,19 +162,20 @@ function HarvestPrompt() {
 function SceneUI() {
   const selectedPath = useExperienceStore((s) => s.selectedPath)
   const sceneStage = useExperienceStore((s) => s.sceneStage)
-  const { hint, label, product } = PATHS[selectedPath]
+  const { hint, label, product, captions, addToCart = true } = PATHS[selectedPath]
 
   return (
     <>
       {sceneStage === 'idle' && hint && (
         <p className="label absolute inset-x-0 bottom-[6vh] m-0 text-center text-cream">{hint}</p>
       )}
-      {sceneStage === 'done' && <ProductReveal label={label} product={product} />}
+      {captions && <SceneCaptions path={selectedPath} />}
+      {sceneStage === 'done' && <ProductReveal label={label} product={product} canAdd={addToCart} />}
     </>
   )
 }
 
-function ProductReveal({ label, product }) {
+function ProductReveal({ label, product, canAdd }) {
   const addToCart = useExperienceStore((s) => s.addToCart)
   const root = useRef(null)
   const [added, setAdded] = useState(false)
@@ -205,6 +207,7 @@ function ProductReveal({ label, product }) {
       <div className="pointer-events-auto w-full rounded-[20px] bg-cream p-4 text-ink [text-shadow:none] sm:w-80 sm:p-5">
         <h3 className="m-0 text-xl font-normal tracking-[-0.02em] sm:hidden">{product.name}</h3>
         <p className="m-0 text-base leading-snug">{product.description}</p>
+        {canAdd && (
         <div className="mt-3 flex justify-end sm:mt-5">
           <Pill
             tone="cherry"
@@ -216,6 +219,7 @@ function ProductReveal({ label, product }) {
             {added ? 'Sepete Eklendi' : 'Sepete Ekle'}
           </Pill>
         </div>
+        )}
       </div>
     </div>
   )

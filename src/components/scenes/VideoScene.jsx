@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PATHS } from '../../config/paths.js'
 import { SELECTION_BRIGHTNESS, VIDEO_ELEMENT_ID, videoTimeAt } from '../../config/videoMap.js'
-import { useExperienceStore } from '../../store/useExperienceStore.js'
+import { transient, useExperienceStore } from '../../store/useExperienceStore.js'
 import { loadVideo, scrubVideo } from '../../ui/videoScrub.js'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -35,6 +35,8 @@ export function VideoScene({ path }) {
     const onUpdate = () => {
       const { sceneStage, startScene, completeScene, resumeScene, returnToGarden } =
         useExperienceStore.getState()
+      const time = videoTimeAt(progress.value, VIDEO_DURATION)
+      transient.sceneTime = time
       if (progress.value >= LOOPED_AT) {
         // Seçim ekranı videonun karartmasını devralır; kareler arasında parlaklık atlamaz.
         document.getElementById(VIDEO_ELEMENT_ID).style.filter = `brightness(${endBrightness})`
@@ -48,7 +50,6 @@ export function VideoScene({ path }) {
         element.style.filter = `brightness(${clamp(endBrightness, 1, brightness)})`
       }
 
-      const time = videoTimeAt(progress.value, VIDEO_DURATION)
       const showProduct = time >= productWindow[0] && time < productWindow[1]
       if (showProduct) {
         if (sceneStage !== 'done') completeScene()
