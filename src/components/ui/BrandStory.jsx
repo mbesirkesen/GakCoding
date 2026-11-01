@@ -12,22 +12,41 @@ function BrandPanel() {
   const setBrandOpen = useExperienceStore((s) => s.setBrandOpen)
   const root = useRef(null)
   const closeButton = useRef(null)
+  const requestClose = useRef(() => {})
 
   useEffect(() => {
     const previousFocus = document.activeElement
     closeButton.current.focus()
-    const close = (event) => event.key === 'Escape' && setBrandOpen(false)
-    window.addEventListener('keydown', close)
+    let intro = null
+    let closing = false
 
     const context = gsap.context(() => {
-      gsap
+      intro = gsap
         .timeline()
         .from(root.current, { yPercent: 100, duration: 0.6, ease: 'power3.inOut' })
         .from('[data-reveal]', { autoAlpha: 0, y: 28, duration: 0.7, stagger: 0.07, ease: 'power3.out' }, '-=0.15')
     }, root)
 
+    // Açılışın tersi: içerik çekilir, panel aşağı iner; store ancak animasyon bitince güncellenir.
+    requestClose.current = () => {
+      if (closing) return
+      closing = true
+      intro.kill()
+      context.add(() => {
+        gsap
+          .timeline({ onComplete: () => setBrandOpen(false) })
+          .to('[data-reveal]', { autoAlpha: 0, y: -16, duration: 0.25, stagger: 0.02, ease: 'power2.in' })
+          .to(root.current, { yPercent: 100, duration: 0.55, ease: 'power3.inOut' }, '-=0.1')
+      })
+    }
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') requestClose.current()
+    }
+    window.addEventListener('keydown', onKeyDown)
+
     return () => {
-      window.removeEventListener('keydown', close)
+      window.removeEventListener('keydown', onKeyDown)
       context.revert()
       previousFocus?.focus?.()
     }
@@ -46,7 +65,7 @@ function BrandPanel() {
           <p className="label m-0">Hikâyemiz</p>
           <button
             ref={closeButton}
-            onClick={() => setBrandOpen(false)}
+            onClick={() => requestClose.current()}
             className="label flex h-11 cursor-pointer items-center rounded-full bg-cream px-5 text-ink"
           >
             Kapat
