@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PATHS } from '../../config/paths.js'
-import { ANIMATION_SECONDS, ICE_CREAM, SCENES, STILL_FRAMES } from '../../config/iceCream.js'
+import {
+  ANIMATION_SECONDS,
+  DISSOLVE_SECONDS,
+  ICE_CREAM,
+  SCENES,
+  SHADE_OUT_SECONDS,
+  STILL_FRAMES,
+} from '../../config/iceCream.js'
 import { SELECTION_BRIGHTNESS } from '../../config/videoMap.js'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
 import { frameUrl, onFramesProgress, startFrameRenderer } from '../../ui/frameSequence.js'
@@ -10,7 +17,6 @@ import { frameUrl, onFramesProgress, startFrameRenderer } from '../../ui/frameSe
 gsap.registerPlugin(ScrollTrigger)
 
 const FADE = 0.2
-const DIM_SECONDS = 0.6 // Son karede seçim ekranının parlaklığına iner.
 const SLIDE = 36
 const heading = 'font-serif leading-[1.02] font-normal tracking-[-0.01em]'
 const legible = '[text-shadow:0_2px_24px_rgba(22,11,12,.6)]'
@@ -35,7 +41,7 @@ function ScrubStory() {
     const area = scroller.current
     const progress = { value: 0 }
     area.focus({ preventScroll: true })
-    // Video vişnelere döner; son kare çizilince seçim ekranına kesintisiz geçilir.
+    // Son karede canvas eriyip altındaki seçim karesini açar; sonra seçim ekranına geçilir.
     const stopRenderer = startFrameRenderer(canvas.current, () => progress.value, () => {
       useExperienceStore.getState().returnToGarden()
     })
@@ -63,7 +69,7 @@ function ScrubStory() {
 
       const timeline = gsap.timeline({
         defaults: { ease: 'none' },
-        scrollTrigger: { ...scrollTrigger, scrub: 0.5 },
+        scrollTrigger: { ...scrollTrigger, scrub: 0.3 },
       })
       timeline.set({}, {}, ANIMATION_SECONDS)
 
@@ -84,15 +90,15 @@ function ScrubStory() {
         }
       })
 
-      timeline.fromTo(
+      timeline.to(
+        '[data-shade]',
+        { autoAlpha: 0, duration: SHADE_OUT_SECONDS[1] - SHADE_OUT_SECONDS[0] },
+        SHADE_OUT_SECONDS[0],
+      )
+      timeline.to(
         canvas.current,
-        { filter: 'brightness(1)' },
-        {
-          filter: `brightness(${SELECTION_BRIGHTNESS})`,
-          duration: DIM_SECONDS,
-          immediateRender: false,
-        },
-        ANIMATION_SECONDS - DIM_SECONDS,
+        { autoAlpha: 0, duration: DISSOLVE_SECONDS[1] - DISSOLVE_SECONDS[0] },
+        DISSOLVE_SECONDS[0],
       )
     }, area)
 
@@ -142,7 +148,7 @@ function StillStory() {
       {Object.entries(scenes).map(([id, block]) => (
         <section key={id} className="relative h-dvh overflow-hidden">
           <img src={frameUrl(STILL_FRAMES[id])} alt="" className="absolute inset-0 size-full object-cover" />
-          <EdgeShade />
+          {id === 'hero' && <EdgeShade />}
           {block}
         </section>
       ))}
@@ -153,6 +159,7 @@ function StillStory() {
 function EdgeShade() {
   return (
     <div
+      data-shade
       aria-hidden
       className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(22,11,12,.55),transparent_32%,transparent_68%,rgba(22,11,12,.55)),linear-gradient(to_top,rgba(22,11,12,.5),transparent_30%)]"
     />
@@ -194,7 +201,7 @@ function OriginBlock({ className = '' }) {
   return (
     <div
       data-scene="origin"
-      className={`absolute top-1/2 left-[var(--gutter)] w-[min(30vw,26rem)] -translate-y-1/2 max-md:top-24 max-md:w-[80vw] max-md:translate-y-0 ${legible} ${className}`}
+      className={`absolute top-1/2 left-[var(--gutter)] w-[min(30vw,26rem)] -translate-y-1/2 max-md:top-24 max-md:w-[80vw] max-md:translate-y-0 text-ink ${className}`}
     >
       <h3 className={`${heading} m-0 text-[clamp(2.25rem,4.4vw,4rem)]`}>{title}</h3>
       <p className="m-0 mt-4 text-[clamp(1rem,1.4vw,1.2rem)] leading-snug">{text}</p>
@@ -206,10 +213,10 @@ function ProcessBlock({ className = '' }) {
   return (
     <ul
       data-scene="process"
-      className={`absolute top-1/2 right-[var(--gutter)] m-0 flex w-[min(28vw,24rem)] -translate-y-1/2 list-none flex-col gap-4 p-0 text-right max-md:top-24 max-md:w-[80vw] max-md:translate-y-0 ${legible} ${className}`}
+      className={`absolute top-1/2 right-[var(--gutter)] m-0 flex w-[min(22vw,20rem)] -translate-y-1/2 list-none flex-col gap-4 p-0 text-right text-ink max-md:top-24 max-md:w-[80vw] max-md:translate-y-0 ${className}`}
     >
       {ICE_CREAM.process.map((item) => (
-        <li key={item} className={`${heading} border-b border-copper pb-3 text-[clamp(1.6rem,2.8vw,2.5rem)]`}>
+        <li key={item} className={`${heading} border-b border-copper pb-3 text-[clamp(1.5rem,2.1vw,2rem)]`}>
           {item}
         </li>
       ))}
@@ -223,7 +230,7 @@ function ProductBlock({ className = '' }) {
   return (
     <div
       data-scene="product"
-      className={`absolute inset-x-[var(--gutter)] bottom-4 mx-auto flex max-w-2xl items-center justify-between gap-4 rounded-[20px] bg-krem px-5 py-3 text-ink ${className}`}
+      className={`absolute inset-x-[var(--gutter)] bottom-4 mx-auto flex max-w-2xl items-center justify-between gap-4 rounded-[20px] bg-krem px-5 py-3 text-ink shadow-[0_8px_32px_rgba(22,11,12,.16)] ${className}`}
     >
       <h3 className={`${heading} m-0 text-[clamp(1.4rem,2.4vw,2rem)] text-cherry-deep`}>{name}</h3>
       <div className="text-right text-sm leading-snug">
@@ -238,7 +245,7 @@ function CtaBlock({ className = '' }) {
   return (
     <h3
       data-scene="cta"
-      className={`${heading} absolute top-1/2 left-[var(--gutter)] m-0 w-[min(30vw,26rem)] -translate-y-1/2 text-[clamp(2.5rem,5vw,4.75rem)] max-md:top-auto max-md:bottom-8 max-md:w-[calc(100%-2*var(--gutter))] max-md:translate-y-0 ${legible} ${className}`}
+      className={`${heading} absolute top-20 left-[var(--gutter)] m-0 text-[clamp(2.25rem,4.4vw,4rem)] whitespace-nowrap text-ink ${className}`}
     >
       {ICE_CREAM.cta.title}
     </h3>
