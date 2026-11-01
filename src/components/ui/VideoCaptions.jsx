@@ -1,20 +1,19 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import { HOTSPOTS, videoTimeAt, videoToScreen, VIDEO_DURATION } from '../../config/videoMap.js'
+import { videoTimeAt, VIDEO_DURATION } from '../../config/videoMap.js'
 import { transient } from '../../store/useExperienceStore.js'
-import { useViewport } from '../../ui/useViewport.js'
 
 const FADE = 0.4
 const RISE = 18
-const PIT_CAPTION_WIDTH = 220
-const NARROW_BREAKPOINT = 640
 
 // Süreler video saniyesidir; her metnin başı videodaki gerçek ana oturur.
+// Vişne cümleleri TÜRKPATENT sicil belgesi No 1273’ten (08.12.2022). Belge yıl, kişi veya efsane yazmaz.
 const CUES = [
   { id: 'castle', out: 1.9 }, // Kale karesi. Dalış bulanıklaşırken söner, çekirdek yazısından önce biter.
   { id: 'seed', in: 2.35, out: 4.6 }, // 2,3'e kadar dalış sürer, tohum sonra görünür.
-  { id: 'tree', in: 5, out: 7 },
-  { id: 'pit', in: 8.1, out: 9.5 }, // Vişne 8,0–8,3 arasında yarılır.
+  { id: 'tree', in: 4.85, out: 6.35 }, // Fidan ve ilk meyve: vişne nedir.
+  { id: 'fruit', in: 6.5, out: 8.0 }, // İki vişne asılıyken: ayırt edici özellik.
+  { id: 'harvest', in: 8.15, out: 9.5 }, // Kesit açılınca: hasat ve kullanım. Seçim ekranından önce söner.
 ]
 
 const shadow = '[text-shadow:0_1px_24px_rgba(22,11,12,.65)]'
@@ -22,11 +21,6 @@ const shadow = '[text-shadow:0_1px_24px_rgba(22,11,12,.65)]'
 /** Videoyla aynı zaman değerinden sürülen metinler: kareyle arada kayma olmaz. */
 export function VideoCaptions() {
   const root = useRef(null)
-  const { width, height } = useViewport()
-  const pit = videoToScreen(HOTSPOTS.pit.u, HOTSPOTS.pit.v, width, height)
-  const gap = HOTSPOTS.pit.radius * pit.frameWidth
-  // Dar ekranda kesitin yanı boş değil: metin vişnelerin altına iner.
-  const narrow = width < NARROW_BREAKPOINT
 
   useEffect(() => {
     const context = gsap.context(() => {
@@ -87,30 +81,51 @@ export function VideoCaptions() {
         </p>
       </div>
 
-      {/* Kutu yok: köşeden yayılan karartma, parlak gökyüzünde yazıyı okunur tutar. */}
       <div
         data-caption="tree"
-        className="invisible absolute top-0 right-0 h-[60vh] w-[75vw] bg-[radial-gradient(ellipse_at_top_right,rgba(22,11,12,.78)_0%,rgba(22,11,12,.45)_38%,transparent_72%)] sm:w-[60vw]"
+        className="invisible absolute right-[var(--gutter)] bottom-[11vh] w-[min(18rem,36vw)] text-right"
       >
-        <p className="label absolute top-24 right-[var(--gutter)] m-0">Harput bahçelerinden</p>
-        <h2 className="absolute top-32 right-[var(--gutter)] m-0 max-w-[12ch] text-right text-[clamp(2.25rem,5vw,4.75rem)] leading-[1] font-normal tracking-[-0.03em]">
-          Premium Elazığ Vişnesi
+        <p className="label m-0">Elazığ vişnesi · mahreç</p>
+        <h2 className="m-0 mt-2 max-w-[16ch] text-[clamp(1.45rem,2.3vw,2.1rem)] leading-[1.02] font-normal tracking-[-0.03em]">
+          Prunus cerasus.
         </h2>
+        <p className="m-0 mt-3 max-w-[46ch] text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+          Yuvarlak, eti dolu bir vişne. Olgunlaşınca rengi bordo olur.
+        </p>
+        <p className="m-0 mt-2 max-w-[48ch] text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+          Geçmişi eskiye dayanır. 8 Aralık 2022’de tescil edildi; ünü Elazığ ile bağlıdır.
+        </p>
       </div>
 
-      {/* Konum çekirdeğe bağlı: her ekran oranında kesitin hemen yanında kalır. */}
       <div
-        data-caption="pit"
-        className="invisible absolute flex items-center gap-3"
-        style={
-          narrow
-            ? { left: 16, top: height - 88 }
-            : { left: pit.x + gap + 90, top: pit.y, width: PIT_CAPTION_WIDTH }
-        }
+        data-caption="fruit"
+        className="invisible absolute right-[var(--gutter)] bottom-[11vh] w-[min(18rem,36vw)] text-right"
       >
-        <span className="h-px w-8 shrink-0 bg-cream max-sm:hidden" aria-hidden />
-        <p className="m-0 text-[clamp(1.25rem,2vw,1.75rem)] leading-tight tracking-[-0.02em]">
-          Özündeki Saklı Değer
+        <p className="label m-0">Ayırt eden</p>
+        <h2 className="m-0 mt-2 max-w-[18ch] text-[clamp(1.45rem,2.3vw,2.1rem)] leading-[1.02] font-normal tracking-[-0.03em]">
+          Mayhoş, çok sulu, lifli.
+        </h2>
+        <p className="m-0 mt-3 text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+          Orta yumuşak. Saplı 4,50–6 gram, sapsız 4,48–5,58 gram.
+        </p>
+        <p className="m-0 mt-2 text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+          Ağaç bir anaca gerek duymaz. Kendi tohumundan ya da köklü çelikten yetişir.
+        </p>
+      </div>
+
+      <div
+        data-caption="harvest"
+        className="invisible absolute right-[var(--gutter)] bottom-[11vh] w-[min(18rem,36vw)] text-right"
+      >
+        <p className="label m-0">Hasat</p>
+        <h2 className="m-0 mt-2 max-w-[16ch] text-[clamp(1.45rem,2.3vw,2.1rem)] leading-[1.02] font-normal tracking-[-0.03em]">
+          Bir defada, sapıyla.
+        </h2>
+        <p className="m-0 mt-3 max-w-[46ch] text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+          İklimin izin verdiği anda, haziran sonu ile temmuzda elle toplanır. Ağaç başına verim 25 kilo kadardır.
+        </p>
+        <p className="m-0 mt-2 max-w-[48ch] text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+          Sofraya gelir. Dondurmaya, meyveli yoğurda, meyve suyuna ve recele de gider.
         </p>
       </div>
     </div>
