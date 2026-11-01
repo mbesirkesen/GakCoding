@@ -11,7 +11,7 @@ const NARROW_BREAKPOINT = 640
 
 // Süreler video saniyesidir; her metnin başı videodaki gerçek ana oturur.
 const CUES = [
-  { id: 'castle', out: 1.3 }, // Video bu metinle açılır, yalnızca söner.
+  { id: 'castle', out: 1.9 }, // Kale karesi. Dalış bulanıklaşırken söner, çekirdek yazısından önce biter.
   { id: 'seed', in: 2.35, out: 4.6 }, // 2,3'e kadar dalış sürer, tohum sonra görünür.
   { id: 'tree', in: 5, out: 7 },
   { id: 'pit', in: 8.1, out: 9.5 }, // Vişne 8,0–8,3 arasında yarılır.
@@ -59,13 +59,20 @@ export function VideoCaptions() {
 
   return (
     <div ref={root} className={`absolute inset-0 overflow-hidden text-cream ${shadow}`}>
-      <div data-caption-intro className="absolute inset-x-[var(--gutter)] bottom-[13vh] text-center">
-        <p
-          data-caption="castle"
-          className="m-0 text-[clamp(1.25rem,2.6vw,2.25rem)] leading-tight font-normal tracking-[-0.02em]"
-        >
-          Tarihin ve Doğanın Kesişim Noktası: Harput
-        </p>
+      <div data-caption-intro className="absolute bottom-[12vh] left-[var(--gutter)] w-[min(36rem,78vw)] text-left">
+        <div data-caption="castle">
+          <p className="label m-0">Harput</p>
+          <h2 className="m-0 mt-2 max-w-[16ch] text-[clamp(1.7rem,3.2vw,2.85rem)] leading-[1.02] font-normal tracking-[-0.03em]">
+            Kayalığın üstündeki şehir
+          </h2>
+          <p className="m-0 mt-3 max-w-[44ch] text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+            Elazığ’ın eski merkezi burası. Kale, derin uçurumlarla çevrili bir kayanın üstünde durur.
+          </p>
+          <p className="m-0 mt-2 max-w-[48ch] text-[clamp(0.95rem,1.3vw,1.125rem)] leading-snug">
+            1834’te Reşid Mehmed Paşa merkezi ovaya indirdi. 1867’de şehre Mamuretülaziz denildi; halk Elaziz dedi.
+            1937’de ad Elazığ oldu.
+          </p>
+        </div>
       </div>
 
       <div
