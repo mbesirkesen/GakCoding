@@ -43,7 +43,8 @@ export const ARAYUZ = {
   krediBasligi: "Krediler",
   kaynakBasligi: "Kaynaklar (özet)",
   krediler: [
-    "Fotoğraf: kullanılmadı (görseller prosedürel 3D).",
+    "Fotoğraf: kullanılmadı. Görseller Blender'da kodla üretilmiş temsilî sahnelerdir.",
+    "Dokular ve gökyüzü: Poly Haven (CC0) — castle_wall_slates, cliff_side, dry_ground_rocks, bloem_hill_01.",
     "3B model: kullanılmadı (tüm nesneler kodla üretilir).",
     "Ses: kullanılmadı.",
     "Font: sistem yazı tipleri.",

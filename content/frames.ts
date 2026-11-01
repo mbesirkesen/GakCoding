@@ -14,7 +14,7 @@ export interface FrameClip {
 }
 
 export const FRAME_CLIPS: FrameClip[] = [
-  { id: "harput-tur", dir: "/frames/01-harput-tur", count: 96, ext: "webp", start: 0, end: 0.4 },
+  { id: "harput-tur", dir: "/frames/01-harput-tur", count: 48, ext: "webp", start: 0, end: 0.4 },
   { id: "bahce-zoom", dir: "/frames/02-bahce-zoom", count: 72, ext: "webp", start: 0.4, end: 0.65 },
   { id: "visne-buyume", dir: "/frames/03-visne-buyume", count: 120, ext: "webp", start: 0.65, end: 1 },
 ];
