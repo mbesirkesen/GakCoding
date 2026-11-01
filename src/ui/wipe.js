@@ -27,8 +27,8 @@ function wipe(action) {
 
 export function choosePath(path) {
   const { selectPath } = useExperienceStore.getState()
-  // Çekirdek sahnesi ağaçtan kesintisiz devam eder, perde kullanılmaz.
-  if (path === 'pit') selectPath(path)
+  // Bu sahneler seçim karesinden kesintisiz devam eder, perde kullanılmaz.
+  if (path === 'pit' || path === 'cherry') selectPath(path)
   else wipe(() => selectPath(path))
 }
 

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import { BRAND } from '../../config/brand.js'
 import { PATHS } from '../../config/paths.js'
+import { BrandStory } from './BrandStory.jsx'
+import { SELECTION_BRIGHTNESS, VIDEO_ELEMENT_ID } from '../../config/videoMap.js'
+import { VideoCaptions } from './VideoCaptions.jsx'
 import { VideoHotspots } from './VideoHotspots.jsx'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
 import { backToGarden, choosePath, registerWipe } from '../../ui/wipe.js'
@@ -11,22 +15,30 @@ export function Overlay() {
   return (
     <>
       <div className="pointer-events-none fixed inset-0 z-10">
-        {(phase === 'intro' || phase === 'growth') && <Hero />}
+        {(phase === 'intro' || phase === 'growth') && (
+          <>
+            <VideoCaptions />
+            <Hero />
+          </>
+        )}
         {phase === 'selection' && <HarvestPrompt />}
         {phase === 'scene' && <SceneUI />}
         <TopActions />
       </div>
+      <BrandStory />
       <div
         ref={registerWipe}
-        className="pointer-events-none invisible fixed inset-0 z-30 bg-cherry"
+        className="pointer-events-none invisible fixed inset-0 z-30 flex items-center justify-center bg-cherry text-[length:var(--text-large)] tracking-[-0.04em] text-cream"
         aria-hidden
-      />
+      >
+        {BRAND.wordmark}.
+      </div>
     </>
   )
 }
 
 function Pill({ children, onClick, tone = 'ink' }) {
-  const tones = { ink: 'bg-ink text-cream', cherry: 'bg-cherry text-cream', light: 'bg-cream text-ink' }
+  const tones = { ink: 'bg-ink text-cream', cherry: 'bg-cherry text-cream', light: 'bg-cream text-ink shadow-[0_0_0_1px_rgba(22,11,12,.14)]' }
   return (
     <button
       onClick={onClick}
@@ -44,22 +56,35 @@ function Hero() {
 
   // Başlık scroll ile söner; React'i her scroll karesinde render etmemek için GSAP yazar.
   useEffect(() => {
-    const tween = gsap.to(root.current, {
-      autoAlpha: 0,
-      ease: 'none',
-      scrollTrigger: { start: 0, end: () => window.innerHeight * 0.45, scrub: true },
-    })
+    const scrollTrigger = { start: 0, end: () => window.innerHeight * 0.45, scrub: true }
+    const tween = gsap.to(root.current, { autoAlpha: 0, ease: 'none', scrollTrigger })
+    // Büyük wordmark sönerken küçük logo devralır; marka hiç ekrandan çıkmaz.
+    const pill = gsap.fromTo(
+      '#brand-pill',
+      { autoAlpha: 0 },
+      { autoAlpha: 1, ease: 'none', scrollTrigger: { ...scrollTrigger } },
+    )
     return () => {
-      tween.scrollTrigger?.kill()
-      tween.kill()
+      for (const animation of [tween, pill]) {
+        animation.scrollTrigger?.kill()
+        animation.kill()
+      }
+      // Scroll hızlı atlansa bile hero'dan sonra logo görünür kalır.
+      gsap.set('#brand-pill', { autoAlpha: 1 })
     }
   }, [])
 
   return (
     <div ref={root} className="absolute inset-0 px-[var(--gutter)]">
-      <h1 className="absolute top-20 m-0 max-w-[22ch] text-[clamp(1.4rem,3vw,2.6rem)] leading-[1.08] font-normal tracking-[-0.02em] sm:top-6 sm:left-[28vw]">
-        Harput vişnesi tohumdan hasada, kaydırdıkça büyür.
-      </h1>
+      <div className="absolute inset-x-[var(--gutter)] top-5 flex h-[calc(25vh-2rem)] flex-col justify-between sm:flex-row sm:items-end">
+        <h1 className="m-0 text-[clamp(3.25rem,min(13vw,19vh),11rem)] leading-[0.8] font-medium tracking-[-0.055em] max-sm:mt-14">
+          {BRAND.wordmark}
+          <span className="text-cherry">.</span>
+        </h1>
+        <p className="m-0 max-w-[24ch] text-[clamp(1rem,1.7vw,1.5rem)] leading-[1.12] tracking-[-0.02em] sm:mb-1 sm:text-right">
+          {BRAND.promise}
+        </p>
+      </div>
       <div className="label absolute inset-x-[var(--gutter)] bottom-[3vh] flex justify-between">
         <span aria-hidden>+</span>
         <span>{phase === 'growth' ? 'Kaydırarak büyüt' : 'Hasat hazırlanıyor'}</span>
@@ -81,7 +106,15 @@ function HarvestPrompt() {
       stagger: 0.06,
       ease: 'power3.out',
     })
-    return () => tween.revert()
+    const dim = gsap.to(document.getElementById(VIDEO_ELEMENT_ID), {
+      filter: `brightness(${SELECTION_BRIGHTNESS})`,
+      duration: 1.2,
+      ease: 'power1.out',
+    })
+    return () => {
+      tween.revert()
+      dim.kill()
+    }
   }, [])
 
   return (
@@ -89,11 +122,16 @@ function HarvestPrompt() {
       <div className="absolute inset-x-0 bottom-0 h-[55vh] bg-gradient-to-t from-ink/80 to-transparent" />
       <VideoHotspots />
       <div className="absolute inset-x-[var(--gutter)] bottom-[4vh] flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <h2 className="m-0 overflow-hidden pb-[0.1em] text-[clamp(2rem,4vw,3.75rem)] leading-none font-normal tracking-[-0.03em]">
-        <span data-rise className="block">
-          Hasadını seç.
-        </span>
-      </h2>
+      <div className="overflow-hidden">
+        <p data-rise className="label m-0 mb-2">
+          {BRAND.name} · Tek ağaç, üç hasat
+        </p>
+        <h2 className="m-0 overflow-hidden pb-[0.1em] text-[clamp(2rem,4vw,3.75rem)] leading-none font-normal tracking-[-0.03em]">
+          <span data-rise className="block">
+            Hasadını Seç
+          </span>
+        </h2>
+      </div>
       {/* Ağaçtaki objelerin klavye ve dokunmatik karşılığı; hover iki yönde eşlenir. */}
       <ol className="pointer-events-auto m-0 w-full list-none overflow-hidden p-0 sm:w-80">
         {Object.entries(PATHS).map(([path, { label, result }], index) => (
@@ -154,15 +192,17 @@ function ProductReveal({ label, product }) {
   return (
     <div
       ref={root}
-      className="absolute inset-x-[var(--gutter)] bottom-[4vh] flex items-end justify-between gap-6 text-cream"
+      className="absolute inset-x-[var(--gutter)] bottom-[4vh] flex items-end justify-between gap-6 text-cream [text-shadow:0_1px_24px_rgba(22,11,12,.6)]"
     >
       <div className="hidden max-w-[32vw] sm:block">
-        <p className="label m-0 mb-3">Hasat — {label}</p>
+        <p className="label m-0 mb-3">
+          {BRAND.name} · Hasat — {label}
+        </p>
         <h2 className="m-0 text-[clamp(2.25rem,4.6vw,5rem)] leading-[0.98] font-normal tracking-[-0.03em]">
           {product.name}
         </h2>
       </div>
-      <div className="pointer-events-auto w-full rounded-[20px] bg-cream p-4 text-ink sm:w-80 sm:p-5">
+      <div className="pointer-events-auto w-full rounded-[20px] bg-cream p-4 text-ink [text-shadow:none] sm:w-80 sm:p-5">
         <h3 className="m-0 text-xl font-normal tracking-[-0.02em] sm:hidden">{product.name}</h3>
         <p className="m-0 text-base leading-snug">{product.description}</p>
         <div className="mt-3 flex items-center justify-between sm:mt-5">
@@ -184,13 +224,20 @@ function ProductReveal({ label, product }) {
 
 function TopActions() {
   const inScene = useExperienceStore((s) => s.phase === 'scene')
+  const setBrandOpen = useExperienceStore((s) => s.setBrandOpen)
   const count = useExperienceStore((s) => s.cart.reduce((sum, line) => sum + line.qty, 0))
 
   return (
     <div className="absolute top-5 right-[var(--gutter)] flex gap-2">
+      <div className={inScene ? 'max-sm:hidden' : ''}>
+        <Pill tone="light" onClick={() => setBrandOpen(true)}>
+          Hikâyemiz
+        </Pill>
+      </div>
       {inScene && (
         <Pill tone="light" onClick={backToGarden}>
-          ← Bahçeye dön
+          ← <span className="max-sm:hidden">Bahçeye dön</span>
+          <span className="sm:hidden">Geri</span>
         </Pill>
       )}
       {count > 0 && <div className="label flex h-11 items-center rounded-full bg-cherry px-5 text-cream">Sepet {count}</div>}

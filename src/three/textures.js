@@ -11,7 +11,7 @@ function canvasTexture(size, draw, { color = true, repeat = false, height = size
   return texture
 }
 
-/** Ham çekirdek pürüzü için bump map; çekirdek ve bar yüzeyi kullanır. */
+/** Ham çekirdek pürüzü için bump map; tesbih çekirdekleri kullanır. */
 export const createNoiseTexture = () =>
   canvasTexture(
     256,
@@ -43,40 +43,4 @@ export const createWoodTexture = () =>
       }
     },
     { repeat: true },
-  )
-
-/** Ham bar yüzeyi: kırmızı, altın ve kahve benekler. */
-export const createBarTexture = () =>
-  canvasTexture(
-    256,
-    (ctx, size) => {
-      ctx.fillStyle = '#6b3a22'
-      ctx.fillRect(0, 0, size, size)
-      const colors = ['#8e1230', '#d6a23f', '#3b1d10', '#b97f3b']
-      for (let i = 0; i < 500; i++) {
-        ctx.fillStyle = colors[i % colors.length]
-        ctx.beginPath()
-        ctx.arc(Math.random() * size, Math.random() * size, 2 + Math.random() * 7, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    },
-    { repeat: true },
-  )
-
-// Yer tutucu logo: gerçek marka dosyası gelince burası değiştirilecek.
-export const createLogoTexture = () =>
-  canvasTexture(
-    512,
-    (ctx, width, height) => {
-      ctx.clearRect(0, 0, width, height)
-      ctx.strokeStyle = '#f6ece0'
-      ctx.lineWidth = 6
-      ctx.strokeRect(8, 8, width - 16, height - 16)
-      ctx.fillStyle = '#f6ece0'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.font = '700 72px Georgia, serif'
-      ctx.fillText('HARPUT', width / 2, height / 2)
-    },
-    { height: 180 },
   )

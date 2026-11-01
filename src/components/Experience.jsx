@@ -3,21 +3,22 @@ import { Canvas } from '@react-three/fiber'
 import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import { useExperienceStore } from '../store/useExperienceStore.js'
 import { HarvestVideo } from './HarvestVideo.jsx'
-import { EnergyBarScene } from './scenes/EnergyBarScene.jsx'
+import { IceCreamScene } from './scenes/IceCreamScene.jsx'
 import { TeaScene } from './scenes/TeaScene.jsx'
 import { TesbihScene } from './scenes/TesbihScene.jsx'
 
-const SCENE_BY_PATH = { leaf: TeaScene, pit: TesbihScene, cherry: EnergyBarScene }
+const WEBGL_SCENE_BY_PATH = { leaf: TeaScene, pit: TesbihScene }
 const MAX_DPR = 1.75
 
 export function Experience() {
   const selectedPath = useExperienceStore((s) => s.selectedPath)
   const [dpr, setDpr] = useState(MAX_DPR)
-  const ActiveScene = SCENE_BY_PATH[selectedPath]
+  const ActiveScene = WEBGL_SCENE_BY_PATH[selectedPath]
 
   return (
     <div id="stage" className="stage-frame fixed inset-0 bg-ink">
       <HarvestVideo />
+      {selectedPath === 'cherry' && <IceCreamScene />}
       {/* WebGL yalnızca sahnelerde çalışır; video scrub'ı GPU'yu paylaşmaz. */}
       {ActiveScene && (
         <div className="absolute inset-0">

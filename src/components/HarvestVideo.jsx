@@ -1,51 +1,31 @@
 import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { VIDEO_ELEMENT_ID, VIDEO_POSTER, VIDEO_URL } from '../config/videoMap.js'
+import { ICE_CREAM_VIDEO_URL, VIDEO_ELEMENT_ID, VIDEO_POSTER, VIDEO_URL } from '../config/videoMap.js'
 import { transient, useExperienceStore } from '../store/useExperienceStore.js'
+import { loadVideo, scrubVideo } from '../ui/videoScrub.js'
 
-const END_MARGIN = 0.05 // Son saniyeye tam seek bazı tarayıcılarda siyah kare verir.
-const SEEK_THRESHOLD = 1 / 48
-
-/** Scroll ile sürülen video: oynatılmaz, her karede hedef zamana seek edilir. */
+/** Kaleden hasada uzanan ana video; sayfa scroll'u ile sürülür. */
 export function HarvestVideo() {
   const video = useRef(null)
 
   useEffect(() => {
     const element = video.current
-    let objectUrl = null
     let disposed = false
 
-    const ready = () => useExperienceStore.getState().beginGrowth()
-    element.addEventListener('canplaythrough', ready, { once: true })
-
-    // Dosya belleğe alınır: seek ağ beklemez, Safari'de de scrub akıcı kalır.
-    fetch(VIDEO_URL)
-      .then((response) => {
-        if (!response.ok) throw new Error(`Video yüklenemedi: ${response.status}`)
-        return response.blob()
-      })
-      .then((blob) => {
-        if (disposed) return
-        objectUrl = URL.createObjectURL(blob)
-        element.src = objectUrl
-      })
-      .catch(() => {
-        if (!disposed) element.src = VIDEO_URL
-      })
-
-    const seek = () => {
-      if (element.seeking || !Number.isFinite(element.duration)) return
-      const target = transient.growth * (element.duration - END_MARGIN)
-      if (Math.abs(element.currentTime - target) > SEEK_THRESHOLD) element.currentTime = target
+    const ready = () => {
+      useExperienceStore.getState().beginGrowth()
+      loadVideo(ICE_CREAM_VIDEO_URL) // Seçimde bekletmemek için önceden indirilir.
     }
-    gsap.ticker.add(seek)
+    element.addEventListener('canplaythrough', ready, { once: true })
+    loadVideo(VIDEO_URL).then((url) => {
+      if (!disposed) element.src = url
+    })
+    const stopScrub = scrubVideo(element, () => transient.growth)
 
     return () => {
       disposed = true
-      gsap.ticker.remove(seek)
+      stopScrub()
       element.removeEventListener('canplaythrough', ready)
       element.removeAttribute('src')
-      if (objectUrl) URL.revokeObjectURL(objectUrl)
     }
   }, [])
 

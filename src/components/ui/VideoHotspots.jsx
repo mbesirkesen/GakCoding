@@ -1,23 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import gsap from 'gsap'
 import { PATHS } from '../../config/paths.js'
 import { HOTSPOTS, VIDEO_ELEMENT_ID, videoToScreen } from '../../config/videoMap.js'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
+import { useViewport } from '../../ui/useViewport.js'
 import { choosePath } from '../../ui/wipe.js'
 
 const HOVER_ZOOM = 1.08
-
-function useViewport() {
-  const [viewport, setViewport] = useState({ width: window.innerWidth, height: window.innerHeight })
-
-  useEffect(() => {
-    const onResize = () => setViewport({ width: window.innerWidth, height: window.innerHeight })
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  return viewport
-}
 
 /** Son karedeki yaprak, çekirdek ve meyvenin üzerine yerleşen tıklama hedefleri. */
 export function VideoHotspots() {
@@ -60,15 +49,17 @@ export function VideoHotspots() {
         onPointerEnter={() => setHoveredPath(path)}
         onPointerLeave={() => setHoveredPath(null)}
         style={{ left: x - size / 2, top: y - size / 2, width: size, height: size }}
-        className="group pointer-events-auto absolute cursor-pointer rounded-full"
+        className="pointer-events-auto absolute flex cursor-pointer items-center justify-center rounded-full"
       >
+        {/* Görünen yalnızca nokta; tıklama alanı objenin tamamıdır. */}
+        <span className="relative flex size-3" aria-hidden>
+          <span
+            className={`absolute inset-0 rounded-full bg-cream/70 ${active ? '' : 'animate-ping [animation-duration:2.4s]'}`}
+          />
+          <span className="relative size-3 rounded-full bg-cream shadow-[0_0_12px_rgba(22,11,12,.5)]" />
+        </span>
         <span
-          className={`absolute inset-0 animate-pulse rounded-full border border-cream/80 shadow-[0_0_48px_12px_rgba(255,214,150,.4)] transition-transform duration-500 ${
-            active ? 'scale-110' : ''
-          }`}
-        />
-        <span
-          className={`label absolute top-full left-1/2 mt-3 -translate-x-1/2 rounded-full bg-ink/80 px-3 py-1 transition-opacity ${
+          className={`label absolute top-1/2 left-1/2 mt-4 -translate-x-1/2 rounded-full bg-cream px-3 py-1 text-ink transition-opacity duration-300 ${
             active ? 'opacity-100' : 'opacity-0'
           }`}
         >

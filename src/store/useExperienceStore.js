@@ -11,11 +11,13 @@ export const transient = { growth: 0 }
 export const useExperienceStore = create((set) => ({
   phase: 'intro',
   selectedPath: null, // 'leaf' | 'pit' | 'cherry' | null
+  brandOpen: false,
   hoveredPath: null, // 3D obje ile HTML liste aynı vurguyu paylaşır.
   sceneStage: 'idle',
   cart: [],
 
   setHoveredPath: (hoveredPath) => set({ hoveredPath }),
+  setBrandOpen: (brandOpen) => set({ brandOpen }),
 
   beginGrowth: () => set((s) => (s.phase === 'intro' ? { phase: 'growth' } : s)),
   reachSelection: () => set((s) => (s.phase === 'growth' ? { phase: 'selection' } : s)),
@@ -28,6 +30,7 @@ export const useExperienceStore = create((set) => ({
     ),
   startScene: () => set((s) => (s.sceneStage === 'idle' ? { sceneStage: 'playing' } : s)),
   completeScene: () => set({ sceneStage: 'done' }),
+  resumeScene: () => set({ sceneStage: 'playing' }),
   returnToGarden: () => set({ phase: 'selection', selectedPath: null, sceneStage: 'idle' }),
 
   addToCart: (product) =>

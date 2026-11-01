@@ -1,6 +1,16 @@
 export const VIDEO_ELEMENT_ID = 'harvest-video'
 export const VIDEO_URL = '/media/harput-growth.mp4'
+export const ICE_CREAM_VIDEO_URL = '/media/gadanalam-dondurma.mp4'
 export const VIDEO_POSTER = '/media/harput-poster.jpg'
+
+// Seçim menüsü videoyu bu parlaklıkta bırakır.
+export const SELECTION_BRIGHTNESS = 0.72
+
+export const VIDEO_DURATION = 9.96
+const END_MARGIN = 0.05 // Son ana tam seek bazı tarayıcılarda siyah kare verir.
+
+/** Video ve metin katmanı aynı hesabı kullanır; ikisi arasında kayma olmaz. */
+export const videoTimeAt = (growth, duration = VIDEO_DURATION) => growth * (duration - END_MARGIN)
 
 const FRAME = { width: 1920, height: 1080 }
 

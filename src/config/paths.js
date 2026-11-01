@@ -24,12 +24,12 @@ export const PATHS = {
   },
   cherry: {
     label: 'Meyve',
-    result: 'Enerji bar',
-    hint: 'Malzemeleri bir araya getirmek için dokun',
+    result: 'Vişne Dondurma',
+    hint: 'Kaydır, vişne dondurmaya dönüşsün',
     product: {
-      id: 'visne-enerji-bar',
-      name: 'Vişneli Enerji Bar',
-      description: 'Vişne, hurma, yulaf ve kuruyemiş.',
+      id: 'visne-dondurma',
+      name: 'Vişne Dondurma',
+      description: 'Harput vişnesinden dondurma.',
       price: 79,
     },
   },

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { useFrame, useThree } from '@react-three/fiber'
-import { HOTSPOTS, VIDEO_ELEMENT_ID, videoToScreen } from '../../config/videoMap.js'
+import { HOTSPOTS, SELECTION_BRIGHTNESS, VIDEO_ELEMENT_ID, videoToScreen } from '../../config/videoMap.js'
 import { useExperienceStore } from '../../store/useExperienceStore.js'
 import { fitDistance } from '../../three/models.jsx'
 import { createNoiseTexture, createWoodTexture } from '../../three/textures.js'
@@ -115,7 +115,7 @@ export function TesbihScene() {
     const time = clock.elapsedTime
 
     // Canvas saydam: arkadaki video karanlığa gömülür, boncuklar önde kalır.
-    document.getElementById(VIDEO_ELEMENT_ID).style.filter = `brightness(${1 - m.fade})`
+    document.getElementById(VIDEO_ELEMENT_ID).style.filter = `brightness(${SELECTION_BRIGHTNESS * (1 - m.fade)})`
     spotlight.current.intensity = m.fade * 22
 
     const material = beadMaterial.current
