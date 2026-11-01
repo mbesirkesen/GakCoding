@@ -54,7 +54,7 @@ export const PATHS = {
     product: {
       id: 'visne-dondurma',
       name: 'Vişne Dondurma',
-      description: 'Harput vişnesinden dondurma.',
+      description: 'Elazığ vişnesinden, katkısız. Derin dondurularak gönderilir.',
     },
   },
 }

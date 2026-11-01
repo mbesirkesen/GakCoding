@@ -139,6 +139,7 @@ function StillStory() {
     hero: <HeroBlock />,
     origin: <OriginBlock />,
     process: <ProcessBlock />,
+    pour: <PourBlock />,
     product: <ProductBlock />,
     cta: <CtaBlock />,
   }
@@ -173,6 +174,7 @@ function SceneBlocks({ animated }) {
       <HeroBlock />
       <OriginBlock className={hidden} />
       <ProcessBlock className={hidden} />
+      <PourBlock className={hidden} />
       <ProductBlock className={hidden} />
       <CtaBlock className={hidden} />
     </>
@@ -221,6 +223,19 @@ function ProcessBlock({ className = '' }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+function PourBlock({ className = '' }) {
+  const { title, text } = ICE_CREAM.pour
+  return (
+    <div
+      data-scene="pour"
+      className={`absolute top-1/2 left-[var(--gutter)] w-[min(30vw,26rem)] -translate-y-1/2 text-ink max-md:top-24 max-md:w-[80vw] max-md:translate-y-0 ${className}`}
+    >
+      <h3 className={`${heading} m-0 text-[clamp(2.25rem,4.4vw,4rem)]`}>{title}</h3>
+      <p className="m-0 mt-4 text-[clamp(1rem,1.4vw,1.2rem)] leading-snug">{text}</p>
+    </div>
   )
 }
 
