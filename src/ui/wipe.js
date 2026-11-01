@@ -25,11 +25,7 @@ function wipe(action) {
     .set(panel, { visibility: 'hidden' })
 }
 
-export function choosePath(path) {
-  const { selectPath } = useExperienceStore.getState()
-  // Bu sahneler seçim karesinden kesintisiz devam eder, perde kullanılmaz.
-  if (path === 'pit' || path === 'cherry') selectPath(path)
-  else wipe(() => selectPath(path))
-}
+// Tüm yollar seçim karesinden kesintisiz devam eder, perde kullanılmaz.
+export const choosePath = (path) => useExperienceStore.getState().selectPath(path)
 
 export const backToGarden = () => wipe(useExperienceStore.getState().returnToGarden)

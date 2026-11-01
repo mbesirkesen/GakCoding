@@ -5,7 +5,7 @@ import { create } from 'zustand'
  * Sahne içi: sceneStage = idle → playing → done
  */
 
-// Her karede değişen değerler React'e girmez; useFrame buradan okur.
+// Her karede değişen değerler React'e girmez; video ve metinler buradan okur.
 export const transient = { growth: 0, sceneTime: 0 } // sceneTime: dönüşüm videosunun saniyesi
 
 export const useExperienceStore = create((set) => ({
@@ -14,7 +14,6 @@ export const useExperienceStore = create((set) => ({
   brandOpen: false,
   hoveredPath: null, // 3D obje ile HTML liste aynı vurguyu paylaşır.
   sceneStage: 'idle',
-  cart: [],
 
   setHoveredPath: (hoveredPath) => set({ hoveredPath }),
   setBrandOpen: (brandOpen) => set({ brandOpen }),
@@ -32,14 +31,4 @@ export const useExperienceStore = create((set) => ({
   completeScene: () => set({ sceneStage: 'done' }),
   resumeScene: () => set({ sceneStage: 'playing' }),
   returnToGarden: () => set({ phase: 'selection', selectedPath: null, sceneStage: 'idle' }),
-
-  addToCart: (product) =>
-    set((s) => {
-      const existing = s.cart.find((line) => line.id === product.id)
-      return {
-        cart: existing
-          ? s.cart.map((line) => (line === existing ? { ...line, qty: line.qty + 1 } : line))
-          : [...s.cart, { ...product, qty: 1 }],
-      }
-    }),
 }))

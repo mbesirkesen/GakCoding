@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { ROSARY_VIDEO_URL, VIDEO_ELEMENT_ID, VIDEO_POSTER, VIDEO_URL } from '../config/videoMap.js'
+import { ROSARY_VIDEO_URL, TEA_VIDEO_URL, VIDEO_ELEMENT_ID, VIDEO_POSTER, VIDEO_URL } from '../config/videoMap.js'
 import { transient, useExperienceStore } from '../store/useExperienceStore.js'
 import { preloadFrames } from '../ui/frameSequence.js'
 import { loadVideo, scrubVideo } from '../ui/videoScrub.js'
@@ -17,6 +17,7 @@ export function HarvestVideo() {
       // Seçimde bekletmemek için dönüşüm içerikleri önceden indirilir.
       preloadFrames()
       loadVideo(ROSARY_VIDEO_URL)
+      loadVideo(TEA_VIDEO_URL)
     }
     element.addEventListener('canplaythrough', ready, { once: true })
     loadVideo(VIDEO_URL).then((url) => {

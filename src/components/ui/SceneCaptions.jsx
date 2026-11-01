@@ -36,7 +36,12 @@ export function SceneCaptions({ path }) {
   }, [captions])
 
   return (
-    <div ref={root} className="absolute inset-0 overflow-hidden text-cream [text-shadow:0_1px_24px_rgba(22,11,12,.75)]">
+    <div
+      ref={root}
+      className={`absolute inset-0 overflow-hidden ${
+        PATHS[path].lightBackdrop ? 'text-ink' : 'text-cream [text-shadow:0_1px_24px_rgba(22,11,12,.75)]'
+      }`}
+    >
       {captions.map((cue, index) => {
         const left = cue.side === 'left'
         return (

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { BRAND } from '../../config/brand.js'
 import { PATHS } from '../../config/paths.js'
@@ -39,7 +39,7 @@ export function Overlay() {
 }
 
 function Pill({ children, onClick, tone = 'ink' }) {
-  const tones = { ink: 'bg-ink text-cream', cherry: 'bg-cherry text-cream', light: 'bg-cream text-ink shadow-[0_0_0_1px_rgba(22,11,12,.14)]' }
+  const tones = { ink: 'bg-ink text-cream', light: 'bg-cream text-ink shadow-[0_0_0_1px_rgba(22,11,12,.14)]' }
   return (
     <button
       onClick={onClick}
@@ -162,7 +162,7 @@ function HarvestPrompt() {
 function SceneUI() {
   const selectedPath = useExperienceStore((s) => s.selectedPath)
   const sceneStage = useExperienceStore((s) => s.sceneStage)
-  const { hint, label, product, captions, addToCart = true } = PATHS[selectedPath]
+  const { hint, label, product, captions, lightBackdrop = false } = PATHS[selectedPath]
 
   return (
     <>
@@ -170,15 +170,13 @@ function SceneUI() {
         <p className="label absolute inset-x-0 bottom-[6vh] m-0 text-center text-cream">{hint}</p>
       )}
       {captions && <SceneCaptions path={selectedPath} />}
-      {sceneStage === 'done' && <ProductReveal label={label} product={product} canAdd={addToCart} />}
+      {sceneStage === 'done' && <ProductReveal label={label} product={product} lightBackdrop={lightBackdrop} />}
     </>
   )
 }
 
-function ProductReveal({ label, product, canAdd }) {
-  const addToCart = useExperienceStore((s) => s.addToCart)
+function ProductReveal({ label, product, lightBackdrop }) {
   const root = useRef(null)
-  const [added, setAdded] = useState(false)
 
   useEffect(() => {
     const tween = gsap.from(root.current.children, {
@@ -194,7 +192,9 @@ function ProductReveal({ label, product, canAdd }) {
   return (
     <div
       ref={root}
-      className="absolute inset-x-[var(--gutter)] bottom-[4vh] flex items-end justify-between gap-6 text-cream [text-shadow:0_1px_24px_rgba(22,11,12,.6)]"
+      className={`absolute inset-x-[var(--gutter)] bottom-[4vh] flex items-end justify-between gap-6 ${
+        lightBackdrop ? 'text-ink' : 'text-cream [text-shadow:0_1px_24px_rgba(22,11,12,.6)]'
+      }`}
     >
       <div className="hidden max-w-[32vw] sm:block">
         <p className="label m-0 mb-3">
@@ -204,22 +204,9 @@ function ProductReveal({ label, product, canAdd }) {
           {product.name}
         </h2>
       </div>
-      <div className="pointer-events-auto w-full rounded-[20px] bg-cream p-4 text-ink [text-shadow:none] sm:w-80 sm:p-5">
+      <div className="pointer-events-auto w-full rounded-[20px] bg-cream p-4 text-ink shadow-[0_8px_32px_rgba(22,11,12,.14)] [text-shadow:none] sm:w-80 sm:p-5">
         <h3 className="m-0 text-xl font-normal tracking-[-0.02em] sm:hidden">{product.name}</h3>
         <p className="m-0 text-base leading-snug">{product.description}</p>
-        {canAdd && (
-        <div className="mt-3 flex justify-end sm:mt-5">
-          <Pill
-            tone="cherry"
-            onClick={() => {
-              addToCart(product)
-              setAdded(true)
-            }}
-          >
-            {added ? 'Sepete Eklendi' : 'Sepete Ekle'}
-          </Pill>
-        </div>
-        )}
       </div>
     </div>
   )
@@ -228,7 +215,6 @@ function ProductReveal({ label, product, canAdd }) {
 function TopActions() {
   const inScene = useExperienceStore((s) => s.phase === 'scene')
   const setBrandOpen = useExperienceStore((s) => s.setBrandOpen)
-  const count = useExperienceStore((s) => s.cart.reduce((sum, line) => sum + line.qty, 0))
 
   return (
     <div className="absolute top-5 right-[var(--gutter)] flex gap-2">
@@ -243,7 +229,6 @@ function TopActions() {
           <span className="sm:hidden">Geri</span>
         </Pill>
       )}
-      {count > 0 && <div className="label flex h-11 items-center rounded-full bg-cherry px-5 text-cream">Sepet {count}</div>}
     </div>
   )
 }

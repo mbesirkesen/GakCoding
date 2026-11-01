@@ -30,7 +30,7 @@ body,
   font-family: var(--font-display);
 }
 
-/* Canvas yeniden boyutlanmaz: çerçeve GPU'da kırpılır, 60 FPS bozulmaz. */
+/* Video yeniden boyutlanmaz: çerçeve GPU'da kırpılır, 60 FPS bozulmaz. */
 .stage-frame {
   clip-path: inset(25vh var(--gutter) 9vh var(--gutter) round 20px);
 }
