@@ -20,6 +20,8 @@ export const useExperienceStore = create((set) => ({
 
   beginGrowth: () => set((s) => (s.phase === 'intro' ? { phase: 'growth' } : s)),
   reachSelection: () => set((s) => (s.phase === 'growth' ? { phase: 'selection' } : s)),
+  resumeGrowth: () =>
+    set((s) => (s.phase === 'selection' ? { phase: 'growth', hoveredPath: null } : s)),
 
   selectPath: (path) =>
     set((s) =>

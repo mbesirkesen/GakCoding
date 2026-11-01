@@ -9,9 +9,10 @@ export default function App() {
   const phase = useExperienceStore((s) => s.phase)
   const brandOpen = useExperienceStore((s) => s.brandOpen)
 
-  // Scroll yalnızca büyüme aşamasında serbest; ağaç tamamlanınca kilitlenir.
+  // Seçim ekranında da serbest: yukarı kaydırınca video geri sarılır.
   useEffect(() => {
-    document.documentElement.style.overflow = phase === 'growth' && !brandOpen ? '' : 'hidden'
+    const scrollable = (phase === 'growth' || phase === 'selection') && !brandOpen
+    document.documentElement.style.overflow = scrollable ? '' : 'hidden'
   }, [phase, brandOpen])
 
   return (
