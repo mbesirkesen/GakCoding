@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/schibsted-grotesk';
+@import '@fontsource-variable/jetbrains-mono';
+
+@theme {
+  --color-cherry: #a30d2d;
+  --color-cream: #f5efe6;
+  --color-ink: #160b0c;
+  --font-display: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, Menlo, monospace;
+  --text-giant: clamp(3.25rem, 11vw, 11rem);
+  --text-large: clamp(2.5rem, 7vw, 7rem);
+}
+
+:root {
+  --gutter: max(5vw, 16px);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+}
+
+/* Canvas yeniden boyutlanmaz: çerçeve GPU'da kırpılır, 60 FPS bozulmaz. */
+.stage-frame {
+  clip-path: inset(25vh var(--gutter) 9vh var(--gutter) round 20px);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
