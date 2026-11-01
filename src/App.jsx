@@ -23,8 +23,9 @@ export default function App() {
         id="brand-pill"
         href="/"
         aria-label={BRAND.name}
-        className="fixed top-5 left-[var(--gutter)] z-20 flex h-11 items-center rounded-full bg-cream px-5 text-xl font-medium tracking-[-0.03em] text-ink no-underline"
+        className="fixed top-5 left-[var(--gutter)] z-20 flex h-11 items-center gap-2 rounded-full bg-cream px-3.5 pr-5 text-xl font-medium tracking-[-0.03em] text-ink no-underline"
       >
+        <img src="/logo.png" alt="" aria-hidden className="h-8 w-auto" />
         {BRAND.wordmark}
         <span className="text-cherry">.</span>
       </a>

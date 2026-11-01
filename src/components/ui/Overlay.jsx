@@ -78,9 +78,12 @@ function Hero() {
   return (
     <div ref={root} className="absolute inset-0 px-[var(--gutter)]">
       <div className="absolute inset-x-[var(--gutter)] top-5 flex h-[calc(25vh-2rem)] flex-col justify-between sm:flex-row sm:items-end">
-        <h1 className="m-0 text-[clamp(3.25rem,min(13vw,19vh),11rem)] leading-[0.8] font-medium tracking-[-0.055em] max-sm:mt-14">
-          {BRAND.wordmark}
-          <span className="text-cherry">.</span>
+        <h1 className="m-0 flex items-end gap-[0.06em] text-[clamp(3.25rem,min(13vw,19vh),11rem)] leading-[0.8] font-medium tracking-[-0.055em] max-sm:mt-14">
+          <img src="/logo.png" alt="" aria-hidden className="h-[0.78em] w-auto" />
+          <span>
+            {BRAND.wordmark}
+            <span className="text-cherry">.</span>
+          </span>
         </h1>
         <p className="m-0 max-w-[24ch] text-[clamp(1rem,1.7vw,1.5rem)] leading-[1.12] tracking-[-0.02em] sm:mb-1 sm:text-right">
           {BRAND.promise}
